@@ -136,7 +136,7 @@
             </size>
            </property>
            <property name="text">
-            <string>Запустить</string>
+            <string>Вкл./Выкл.</string>
            </property>
           </widget>
          </item>
@@ -159,11 +159,11 @@
      </item>
     </layout>
    </widget>
-   <widget class="QWidget" name="">
+   <widget class="QWidget" name="layoutWidget">
     <property name="geometry">
      <rect>
-      <x>420</x>
-      <y>290</y>
+      <x>410</x>
+      <y>280</y>
       <width>257</width>
       <height>19</height>
      </rect>
