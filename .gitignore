@@ -1,56 +1,137 @@
 #QtCreator
 build/
+# Ignore Qt Creator project files
+*.pro.user
+*.pro.user.*
+*.creator
+*.creator.shared
 
-#STM32CubeIDE
-#settings
-.settings/
-
-#metadata
-.metadata/
-
-#Debug
-Debug/
+# Ignore build artifacts
+build-*
 debug/
-Release/
-release
-
-# Prerequisites
-*.d
-
-# Object files
+release/
 *.o
-*.ko
 *.obj
-*.elf
-
-# Linker output
+*.pdb
 *.ilk
-*.map
-*.exp
-
-# Libraries
-*.lib
-*.a
-*.la
-*.lo
-
-# Shared objects
+*.idb
+*.exe
 *.dll
 *.so
-*.so.*
+*.a
+*.lib
 *.dylib
-
-# Executables
-*.exe
-*.out
 *.app
-*.i*86
-*.x86_64
-*.hex
-*.bin
+*.qm
 
-# Debug files
-*.dSYM/
+# Ignore Qt specific files
+Makefile*
+*.qmake.stash
+*.qrc_*
+
+# Ignore temporary files
+*.tmp
+*.bak
+*.old
+*.swp
+*.swo
+*.swn
+*.swo
+*.swn
+*.swo
+*.swn
+
+# Ignore IDE-specific files
+.qtc_clangd/
+
+# Ignore any local configuration files
+*.user
+
+# Ignore any log files
+*.log
+
+# Ignore any backup files
+*~
+
+# Ignore any generated files
+GeneratedFiles/
+
+# Ignore any temporary files created by the IDE
+.metadata/
+
+# Ignore any core dump files
+core.*
+
+# Ignore any other temporary or generated files
+*.*~
+*.pyc
+*.pyo
+*.class
+
+#STM32CubeIDE
+# Ignore Eclipse project files
+.project
+.cproject
+.settings/
+
+# Ignore STM32CubeIDE workspace metadata
+RemoteSystemsTempFiles/
+
+# Ignore build artifacts
+Debug/
+Release/
+*.elf
+*.bin
+*.hex
+*.map
+*.d
+*.o
+*.lst
+*.s
 *.su
-*.idb
-*.pdb
+*.axf
+*.crf
+*.htm
+*.dep
+*.launch
+*.patch
+*.dbgconf
+
+# Ignore temporary files
+*.tmp
+*.bak
+*.old
+*.swp
+*.swo
+*.swn
+*.swo
+*.swn
+*.swo
+*.swn
+
+# Ignore IDE-specific files
+STM32CubeMX/
+
+# Ignore any local configuration files
+*.user
+
+# Ignore any log files
+*.log
+
+# Ignore any backup files
+*~
+
+# Ignore any generated files
+GeneratedFiles/
+
+# Ignore any temporary files created by the IDE
+.metadata/
+
+# Ignore any core dump files
+core.*
+
+# Ignore any other temporary or generated files
+*.*~
+*.pyc
+*.pyo
+*.class

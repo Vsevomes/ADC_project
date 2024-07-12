@@ -16,6 +16,8 @@ MainWindow::MainWindow(QWidget *parent)
     ui->analog_signal->setChart(chart);
     ui->analog_signal->setRenderHint(QPainter::Antialiasing);
 
+    ui->triggerSlider->setRange(0, 3300);
+
     qRegisterMetaType<std::vector<int>>("std::vector<int>");
     qRegisterMetaType<std::string>("std::string");
 
@@ -51,17 +53,46 @@ void MainWindow::on_pushButton_toggled(bool checked)
 void MainWindow::handleResults(const std::vector<int>& sample, const std::string& freq, const std::string& amplitude, const std::string& low_volt, const std::string& deviation)
 {
     QtCharts::QSplineSeries *series = new QtCharts::QSplineSeries();
+    QtCharts::QSplineSeries *trigger_series = new QtCharts::QSplineSeries();
     QtCharts::QChart *chart = new QtCharts::QChart();
 
+    int trigger = ui->triggerSlider->value();
+    bool flag = false;
+    bool flag_first_dot = true;
     float step = 1 / std::stof(freq);
     float x_value = 0;
 
-    for (auto num : sample) {
-        x_value += step;
-        series->append(x_value, (float)num / 4095 * 3500); // уточнить опорное напряжение
+    for (int i = 0; i < sample.size() - 1;  ++i) {
+
+        if ((float)trigger - 100 < (float)sample[i] / 4095 * 3500 && (float)trigger + 100 > (float)sample[i] / 4095 * 3500 && sample[i + 1] > sample[i])
+            flag = true;
+
+        if (flag == true){
+            if (flag_first_dot == true){
+                trigger_series->append(x_value, float(trigger));
+                series->append(x_value, float(trigger)); // уточнить опорное напряжение
+                x_value += step;
+                flag_first_dot = false;
+            }
+            else {
+                trigger_series->append(x_value, float(trigger));
+                series->append(x_value, (float)sample[i] / 4095 * 3500); // уточнить опорное напряжение
+                x_value += step;
+            }
+        }
     }
 
+    QPen pen(Qt::blue);
+    trigger_series->setPen(pen);
+
     chart->addSeries(series);
+
+    pen.setColor(Qt::darkYellow);
+    pen.setStyle(Qt::DashLine);
+    trigger_series->setPen(pen);
+
+    chart->addSeries(trigger_series);
+
     chart->legend()->hide();
     chart->setTitle("Analog Signal");
     chart->createDefaultAxes();
@@ -77,5 +108,36 @@ void MainWindow::handleWorkFinished()
 {
     thread->quit();
     thread->wait();
+}
+
+
+void MainWindow::on_triggerSlider_sliderMoved(int position)
+{
+    QString value;
+    ui->trigger->setText(value.setNum(position));
+}
+
+
+void MainWindow::on_trigger_textChanged()
+{
+    QString value = ui->trigger->toPlainText();
+    QString filteredText;
+    QRegularExpression regex("[^0-9]");
+
+    for (const QChar &ch : value) {
+        if (!regex.match(ch).hasMatch()) {
+            filteredText.append(ch);
+        }
+    }
+
+    if (value != filteredText) {
+        ui->trigger->blockSignals(true);
+        ui->trigger->setPlainText(filteredText);
+        ui->trigger->moveCursor(QTextCursor::End);
+        ui->trigger->blockSignals(false);
+    }
+    else {
+        ui->triggerSlider->setSliderPosition(value.toInt());
+    }
 }
 
