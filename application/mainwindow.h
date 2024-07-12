@@ -80,12 +80,16 @@ public:
 
 private slots:
     void on_pushButton_toggled(bool checked);
+
     void handleResults(const std::vector<int>& sample, const std::string& freq, const std::string& amplitude, const std::string& low_volt, const std::string& deviation);
+
     void handleWorkFinished();
 
     void on_triggerSlider_sliderMoved(int position);
 
     void on_trigger_textChanged();
+
+    void on_btn500Hz_clicked();
 
 private:
     Ui::MainWindow *ui;

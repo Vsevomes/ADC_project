@@ -18,6 +18,8 @@ MainWindow::MainWindow(QWidget *parent)
 
     ui->triggerSlider->setRange(0, 3300);
 
+    ui->btn500Hz->click();
+
     qRegisterMetaType<std::vector<int>>("std::vector<int>");
     qRegisterMetaType<std::string>("std::string");
 
@@ -139,5 +141,24 @@ void MainWindow::on_trigger_textChanged()
     else {
         ui->triggerSlider->setSliderPosition(value.toInt());
     }
+}
+
+
+void MainWindow::on_btn500Hz_clicked()
+{
+    // int adc_freq_divider = 4000;
+
+    // struct termios tty;
+    // int serial_port = open("/dev/ttyUSB0", O_RDWR);
+    // if (serial_port < 0) {
+    //     std::cerr << "Ошибка при открытии UART порта" << std::endl;
+    //     return;
+    // }
+
+    // init_port_uart(serial_port, tty);
+
+    // send_freq_divider(serial_port, adc_freq_divider, DIVIDER_SIG);
+
+    // ::close(serial_port);
 }
 

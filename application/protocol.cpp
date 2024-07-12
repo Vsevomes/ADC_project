@@ -98,3 +98,9 @@ void receive_array(int port, std::vector<int>& sample, int& adc_freq){
         }
     }
 }
+
+void send_freq_divider(int port, int freq_divider, char sig){
+    char msg[20];
+    sprintf(msg, "%c %d", sig, freq_divider);
+    write(port, msg, sizeof(msg));
+}
