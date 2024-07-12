@@ -7,6 +7,7 @@
 #include <QtCharts/QChartView>
 #include <QtCharts/QSplineSeries>
 #include <QThread>
+#include <QRegularExpression>
 #include "protocol.h"
 #include "function.h"
 
@@ -81,6 +82,10 @@ private slots:
     void on_pushButton_toggled(bool checked);
     void handleResults(const std::vector<int>& sample, const std::string& freq, const std::string& amplitude, const std::string& low_volt, const std::string& deviation);
     void handleWorkFinished();
+
+    void on_triggerSlider_sliderMoved(int position);
+
+    void on_trigger_textChanged();
 
 private:
     Ui::MainWindow *ui;
