@@ -1,3 +1,3 @@
 # ADC_project
 --------------
-![изображение](https://github.com/user-attachments/assets/a08f62ef-ae96-4fc1-9683-05241705e20a)
+![изображение](https://github.com/user-attachments/assets/42a9eabb-4412-4803-bd50-020073c4758a)
