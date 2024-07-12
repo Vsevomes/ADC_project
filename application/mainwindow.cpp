@@ -146,19 +146,20 @@ void MainWindow::on_trigger_textChanged()
 
 void MainWindow::on_btn500Hz_clicked()
 {
-    // int adc_freq_divider = 4000;
+    int adc_freq_divider = 4000;
 
-    // struct termios tty;
-    // int serial_port = open("/dev/ttyUSB0", O_RDWR);
-    // if (serial_port < 0) {
-    //     std::cerr << "Ошибка при открытии UART порта" << std::endl;
-    //     return;
-    // }
+    struct termios tty;
+    int serial_port = open("/dev/ttyUSB0", O_RDWR);
+    if (serial_port < 0) {
+        std::cerr << "Ошибка при открытии UART порта" << std::endl;
+        return;
+    }
 
-    // init_port_uart(serial_port, tty);
+    init_port_uart(serial_port, tty);
 
-    // send_freq_divider(serial_port, adc_freq_divider, DIVIDER_SIG);
+    send_freq_divider(serial_port, adc_freq_divider, DIVIDER_SIG);
+    std::cout << "send sig" << std::endl;
 
-    // ::close(serial_port);
+    ::close(serial_port);
 }
 
