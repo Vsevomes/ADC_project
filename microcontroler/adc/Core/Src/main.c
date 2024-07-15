@@ -88,8 +88,6 @@ int main(void)
 
   /* USER CODE BEGIN Init */
   char msg[20];
-  char received_divider[20];
-  char numb[10];
   char send_sig = 0x55;
   uint8_t received_sig;
   /* USER CODE END Init */
@@ -136,30 +134,45 @@ int main(void)
   /* USER CODE BEGIN WHILE */
   while (1)
   {
-	  //HAL_UART_Receive(&huart1, &received_sig, 1, HAL_MAX_DELAY);
-//	  HAL_UART_Receive(&huart1, &received_divider, strlen(received_divider), HAL_MAX_DELAY);
-//	  if (received_divider[0] == 0xBB){
-//		  for (int i = 2; i < sizeof(numb)/sizeof(char) - 1; ++i){
-//			  numb[i - 2] = received_divider[i];
-//		  }
-//		  numb[sizeof(numb)/sizeof(char) - 1] = '/0';
-//		  disc_prescaler = atoi(numb);
-//		  MX_TIM3_Init();
-//	  }
+	  HAL_UART_Receive(&huart1, &received_sig, 1, HAL_MAX_DELAY);
 
-	  if (control_flag == 1 /*&& received_sig == 0xAA*/){
-		  sprintf(msg, "%c\n", send_sig);
-		  HAL_UART_Transmit(&huart1, (uint8_t*) msg, strlen(msg), HAL_MAX_DELAY);
-		  sprintf(msg, "%lu\n", HAL_RCC_GetPCLK2Freq() / adc_prescaler / disc_prescaler);
-		  HAL_UART_Transmit(&huart1, (uint8_t*) msg, strlen(msg), HAL_MAX_DELAY);
-		  sprintf(msg, "%d\n", size);
-		  HAL_UART_Transmit(&huart1, (uint8_t*) msg, strlen(msg), HAL_MAX_DELAY);
-		  for (int i = 0; i < sizeof(sample) / sizeof(uint16_t); ++i){
-			  sprintf(msg, "%d ", sample[i]);
+	  if (control_flag == 1){
+		  if (received_sig == 0xAA){
+			  sprintf(msg, "%c\n", send_sig);
+			  HAL_UART_Transmit(&huart1, (uint8_t*) msg, strlen(msg), HAL_MAX_DELAY);
+			  sprintf(msg, "%lu\n", HAL_RCC_GetPCLK2Freq() / adc_prescaler / disc_prescaler);
+			  HAL_UART_Transmit(&huart1, (uint8_t*) msg, strlen(msg), HAL_MAX_DELAY);
+			  sprintf(msg, "%d\n", size);
+			  HAL_UART_Transmit(&huart1, (uint8_t*) msg, strlen(msg), HAL_MAX_DELAY);
+			  for (int i = 0; i < sizeof(sample) / sizeof(uint16_t); ++i){
+				  sprintf(msg, "%d ", sample[i]);
+				  HAL_UART_Transmit(&huart1, (uint8_t*) msg, strlen(msg), HAL_MAX_DELAY);
+			  }
+			  sprintf(msg, "\n");
 			  HAL_UART_Transmit(&huart1, (uint8_t*) msg, strlen(msg), HAL_MAX_DELAY);
 		  }
-		  sprintf(msg, "\n");
-		  HAL_UART_Transmit(&huart1, (uint8_t*) msg, strlen(msg), HAL_MAX_DELAY);
+
+		  else if (received_sig == 0xCA){
+			  disc_prescaler = 8000;
+			  MX_TIM3_Init();
+		  }
+
+		  else if (received_sig == 0xCB){
+			  disc_prescaler = 4000;
+			  MX_TIM3_Init();
+		  }
+		  else if (received_sig == 0xCC){
+			  disc_prescaler = 2000;
+			  MX_TIM3_Init();
+		  }
+		  else if (received_sig == 0xCD){
+			  disc_prescaler = 1000;
+			  MX_TIM3_Init();
+		  }
+		  else if (received_sig == 0xCE){
+			  disc_prescaler = 500;
+			  MX_TIM3_Init();
+		  }
 
 		  control_flag = 0;
 	  }
@@ -325,7 +338,7 @@ static void MX_USART1_UART_Init(void)
 
   /* USER CODE END USART1_Init 1 */
   huart1.Instance = USART1;
-  huart1.Init.BaudRate = 9600;
+  huart1.Init.BaudRate = 230400;
   huart1.Init.WordLength = UART_WORDLENGTH_8B;
   huart1.Init.StopBits = UART_STOPBITS_1;
   huart1.Init.Parity = UART_PARITY_NONE;

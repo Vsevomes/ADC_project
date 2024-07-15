@@ -54,6 +54,8 @@ void MainWindow::on_pushButton_toggled(bool checked)
 
 void MainWindow::handleResults(const std::vector<int>& sample, const std::string& freq, const std::string& amplitude, const std::string& low_volt, const std::string& deviation)
 {
+    std::cout << "Handling results: freq=" << freq << ", amplitude=" << amplitude << ", low_volt=" << low_volt << ", deviation=" << deviation << std::endl;
+
     QtCharts::QSplineSeries *series = new QtCharts::QSplineSeries();
     QtCharts::QSplineSeries *trigger_series = new QtCharts::QSplineSeries();
     QtCharts::QChart *chart = new QtCharts::QChart();
@@ -143,11 +145,9 @@ void MainWindow::on_trigger_textChanged()
     }
 }
 
-
-void MainWindow::on_btn500Hz_clicked()
+void MainWindow::on_btn250Hz_clicked()
 {
-    int adc_freq_divider = 4000;
-
+    ui->pushButton->setChecked(false);
     struct termios tty;
     int serial_port = open("/dev/ttyUSB0", O_RDWR);
     if (serial_port < 0) {
@@ -157,8 +157,80 @@ void MainWindow::on_btn500Hz_clicked()
 
     init_port_uart(serial_port, tty);
 
-    send_freq_divider(serial_port, adc_freq_divider, DIVIDER_SIG);
-    std::cout << "send sig" << std::endl;
+    send_signal(serial_port, DIVIDER_250Hz);
+    std::cout << "send sig 250 Hz" << std::endl;
+
+    ::close(serial_port);
+}
+
+void MainWindow::on_btn500Hz_clicked()
+{
+    ui->pushButton->setChecked(false);
+    struct termios tty;
+    int serial_port = open("/dev/ttyUSB0", O_RDWR);
+    if (serial_port < 0) {
+        std::cerr << "Ошибка при открытии UART порта" << std::endl;
+        return;
+    }
+
+    init_port_uart(serial_port, tty);
+
+    send_signal(serial_port, DIVIDER_500Hz);
+    std::cout << "send sig 500 Hz" << std::endl;
+
+    ::close(serial_port);
+}
+
+void MainWindow::on_btn1000Hz_clicked()
+{
+    ui->pushButton->setChecked(false);
+    struct termios tty;
+    int serial_port = open("/dev/ttyUSB0", O_RDWR);
+    if (serial_port < 0) {
+        std::cerr << "Ошибка при открытии UART порта" << std::endl;
+        return;
+    }
+
+    init_port_uart(serial_port, tty);
+
+    send_signal(serial_port, DIVIDER_1000Hz);
+    std::cout << "send sig 1000 Hz" << std::endl;
+
+    ::close(serial_port);
+}
+
+void MainWindow::on_btn2000Hz_clicked()
+{
+    ui->pushButton->setChecked(false);
+    struct termios tty;
+    int serial_port = open("/dev/ttyUSB0", O_RDWR);
+    if (serial_port < 0) {
+        std::cerr << "Ошибка при открытии UART порта" << std::endl;
+        return;
+    }
+
+    init_port_uart(serial_port, tty);
+
+    send_signal(serial_port, DIVIDER_2000Hz);
+    std::cout << "send sig 2000 Hz" << std::endl;
+
+    ::close(serial_port);
+}
+
+void MainWindow::on_btn4000Hz_clicked()
+{
+    ui->pushButton->setChecked(false);
+    struct termios tty;
+    int serial_port = open("/dev/ttyUSB0", O_RDWR);
+    if (serial_port < 0) {
+        std::cerr << "Ошибка при открытии UART порта" << std::endl;
+        return;
+    }
+
+    init_port_uart(serial_port, tty);
+
+    send_signal(serial_port, DIVIDER_4000Hz);
+    std::cout << "send sig 4000 Hz" << std::endl;
 
     ::close(serial_port);
 }

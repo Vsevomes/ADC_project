@@ -33,7 +33,7 @@ public slots:
         init_port_uart(serial_port, tty);
 
         while (!stop) {
-            send_data(serial_port, SEND_SIG);
+            send_signal(serial_port, SEND_SIG);
 
             std::string freq, amplitude, low_volt, deviation;
             std::vector<int> sample;
@@ -45,8 +45,11 @@ public slots:
             find_min_max_volt(sample, amplitude, low_volt);
             find_deviation(sample, deviation);
 
+            std::cout << "Data received: freq=" << freq << ", amplitude=" << amplitude << ", low_volt=" << low_volt << ", deviation=" << deviation << std::endl;
+
             emit resultReady(sample, freq, amplitude, low_volt, deviation);
 
+            QThread::msleep(1000);
         }
 
         ::close(serial_port);
@@ -90,6 +93,14 @@ private slots:
     void on_trigger_textChanged();
 
     void on_btn500Hz_clicked();
+
+    void on_btn250Hz_clicked();
+
+    void on_btn1000Hz_clicked();
+
+    void on_btn2000Hz_clicked();
+
+    void on_btn4000Hz_clicked();
 
 private:
     Ui::MainWindow *ui;
