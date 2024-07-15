@@ -88,6 +88,8 @@ int main(void)
 
   /* USER CODE BEGIN Init */
   char msg[20];
+  char received_divider[20];
+  char numb[10];
   char send_sig = 0x55;
   uint8_t received_sig;
   /* USER CODE END Init */
@@ -135,19 +137,29 @@ int main(void)
   while (1)
   {
 	  //HAL_UART_Receive(&huart1, &received_sig, 1, HAL_MAX_DELAY);
+//	  HAL_UART_Receive(&huart1, &received_divider, strlen(received_divider), HAL_MAX_DELAY);
+//	  if (received_divider[0] == 0xBB){
+//		  for (int i = 2; i < sizeof(numb)/sizeof(char) - 1; ++i){
+//			  numb[i - 2] = received_divider[i];
+//		  }
+//		  numb[sizeof(numb)/sizeof(char) - 1] = '/0';
+//		  disc_prescaler = atoi(numb);
+//		  MX_TIM3_Init();
+//	  }
+
 	  if (control_flag == 1 /*&& received_sig == 0xAA*/){
-			  sprintf(msg, "%c\n", send_sig);
+		  sprintf(msg, "%c\n", send_sig);
+		  HAL_UART_Transmit(&huart1, (uint8_t*) msg, strlen(msg), HAL_MAX_DELAY);
+		  sprintf(msg, "%lu\n", HAL_RCC_GetPCLK2Freq() / adc_prescaler / disc_prescaler);
+		  HAL_UART_Transmit(&huart1, (uint8_t*) msg, strlen(msg), HAL_MAX_DELAY);
+		  sprintf(msg, "%d\n", size);
+		  HAL_UART_Transmit(&huart1, (uint8_t*) msg, strlen(msg), HAL_MAX_DELAY);
+		  for (int i = 0; i < sizeof(sample) / sizeof(uint16_t); ++i){
+			  sprintf(msg, "%d ", sample[i]);
 			  HAL_UART_Transmit(&huart1, (uint8_t*) msg, strlen(msg), HAL_MAX_DELAY);
-			  sprintf(msg, "%lu\n", HAL_RCC_GetPCLK2Freq() / adc_prescaler / disc_prescaler);
-			  HAL_UART_Transmit(&huart1, (uint8_t*) msg, strlen(msg), HAL_MAX_DELAY);
-			  sprintf(msg, "%d\n", size);
-			  HAL_UART_Transmit(&huart1, (uint8_t*) msg, strlen(msg), HAL_MAX_DELAY);
-			  for (int i = 0; i < sizeof(sample) / sizeof(uint16_t); ++i){
-				  sprintf(msg, "%d ", sample[i]);
-				  HAL_UART_Transmit(&huart1, (uint8_t*) msg, strlen(msg), HAL_MAX_DELAY);
-			  }
-			  sprintf(msg, "\n");
-			  HAL_UART_Transmit(&huart1, (uint8_t*) msg, strlen(msg), HAL_MAX_DELAY);
+		  }
+		  sprintf(msg, "\n");
+		  HAL_UART_Transmit(&huart1, (uint8_t*) msg, strlen(msg), HAL_MAX_DELAY);
 
 		  control_flag = 0;
 	  }
