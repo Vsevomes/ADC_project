@@ -38,16 +38,17 @@ public slots:
             std::string freq, amplitude, low_volt, deviation;
             std::vector<int> sample;
             int adc_freq;
+            int warn_flag;
 
             receive_array(serial_port, sample, adc_freq);
 
-            find_freq(sample, adc_freq, freq);
+            find_freq(sample, adc_freq, freq, warn_flag);
             find_min_max_volt(sample, amplitude, low_volt);
             find_deviation(sample, deviation);
 
             std::cout << "Data received: freq=" << freq << ", amplitude=" << amplitude << ", low_volt=" << low_volt << ", deviation=" << deviation << std::endl;
 
-            emit resultReady(sample, freq, amplitude, low_volt, deviation);
+            emit resultReady(sample, freq, amplitude, low_volt, deviation, warn_flag);
 
             QThread::msleep(1000);
         }
@@ -61,7 +62,7 @@ public slots:
     }
 
 signals:
-    void resultReady(const std::vector<int>& sample, const std::string& freq, const std::string& amplitude, const std::string& low_volt, const std::string& deviation);
+    void resultReady(const std::vector<int>& sample, const std::string& freq, const std::string& amplitude, const std::string& low_volt, const std::string& deviation, const int& warning_flag);
     void workFinished();
 
 public:
@@ -84,7 +85,7 @@ public:
 private slots:
     void on_pushButton_toggled(bool checked);
 
-    void handleResults(const std::vector<int>& sample, const std::string& freq, const std::string& amplitude, const std::string& low_volt, const std::string& deviation);
+    void handleResults(const std::vector<int>& sample, const std::string& freq, const std::string& amplitude, const std::string& low_volt, const std::string& deviation, const int& warn_flag);
 
     void handleWorkFinished();
 
@@ -106,5 +107,6 @@ private:
     Ui::MainWindow *ui;
     ChartThread *chartThread;
     QThread *thread;
+    int warning_flag;
 };
 #endif // MAINWINDOW_H

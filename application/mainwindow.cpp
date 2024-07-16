@@ -6,6 +6,7 @@ MainWindow::MainWindow(QWidget *parent)
     , ui(new Ui::MainWindow)
     , chartThread(new ChartThread)
     , thread(new QThread)
+    , warning_flag(0)
 {
     ui->setupUi(this);
     ui->pushButton->setCheckable(true);
@@ -27,7 +28,6 @@ MainWindow::MainWindow(QWidget *parent)
     connect(thread, &QThread::started, chartThread, &ChartThread::doWork);
     connect(chartThread, &ChartThread::resultReady, this, &MainWindow::handleResults);
     connect(chartThread, &ChartThread::workFinished, this, &MainWindow::handleWorkFinished);
-
 }
 
 MainWindow::~MainWindow()
@@ -48,11 +48,12 @@ void MainWindow::on_pushButton_toggled(bool checked)
         }
     } else {
         ui->status->setText("Передача данных остановлена");
+        ui->warning->setText("");
         chartThread->stopWork();
     }
 }
 
-void MainWindow::handleResults(const std::vector<int>& sample, const std::string& freq, const std::string& amplitude, const std::string& low_volt, const std::string& deviation)
+void MainWindow::handleResults(const std::vector<int>& sample, const std::string& freq, const std::string& amplitude, const std::string& low_volt, const std::string& deviation, const int& warn_flag)
 {
     std::cout << "Handling results: freq=" << freq << ", amplitude=" << amplitude << ", low_volt=" << low_volt << ", deviation=" << deviation << std::endl;
 
@@ -65,6 +66,14 @@ void MainWindow::handleResults(const std::vector<int>& sample, const std::string
     bool flag_first_dot = true;
     float step = 1 / std::stof(freq);
     float x_value = 0;
+    warning_flag = warn_flag;
+
+    if (warning_flag == 1) {
+        ui->warning->setText("Частота дискретизации слишком низкая!");
+    }
+    else if (warning_flag == 2){
+        ui->warning->setText("Частота дискретизации слишком высокая!");
+    }
 
     for (int i = 0; i < sample.size() - 1;  ++i) {
 
@@ -148,6 +157,8 @@ void MainWindow::on_trigger_textChanged()
 void MainWindow::on_btn250Hz_clicked()
 {
     ui->pushButton->setChecked(false);
+    ui->warning->setText("");
+    warning_flag = 0;
     struct termios tty;
     int serial_port = open("/dev/ttyUSB0", O_RDWR);
     if (serial_port < 0) {
@@ -166,6 +177,8 @@ void MainWindow::on_btn250Hz_clicked()
 void MainWindow::on_btn500Hz_clicked()
 {
     ui->pushButton->setChecked(false);
+    ui->warning->setText("");
+    warning_flag = 0;
     struct termios tty;
     int serial_port = open("/dev/ttyUSB0", O_RDWR);
     if (serial_port < 0) {
@@ -184,6 +197,8 @@ void MainWindow::on_btn500Hz_clicked()
 void MainWindow::on_btn1000Hz_clicked()
 {
     ui->pushButton->setChecked(false);
+    ui->warning->setText("");
+    warning_flag = 0;
     struct termios tty;
     int serial_port = open("/dev/ttyUSB0", O_RDWR);
     if (serial_port < 0) {
@@ -202,6 +217,8 @@ void MainWindow::on_btn1000Hz_clicked()
 void MainWindow::on_btn2000Hz_clicked()
 {
     ui->pushButton->setChecked(false);
+    ui->warning->setText("");
+    warning_flag = 0;
     struct termios tty;
     int serial_port = open("/dev/ttyUSB0", O_RDWR);
     if (serial_port < 0) {
@@ -220,6 +237,8 @@ void MainWindow::on_btn2000Hz_clicked()
 void MainWindow::on_btn4000Hz_clicked()
 {
     ui->pushButton->setChecked(false);
+    ui->warning->setText("");
+    warning_flag = 0;
     struct termios tty;
     int serial_port = open("/dev/ttyUSB0", O_RDWR);
     if (serial_port < 0) {
