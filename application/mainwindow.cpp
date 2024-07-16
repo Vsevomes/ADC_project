@@ -77,7 +77,7 @@ void MainWindow::handleResults(const std::vector<int>& sample, const std::string
 
     for (int i = 0; i < sample.size() - 1;  ++i) {
 
-        if ((float)trigger < (float)sample[i] / 4095 * 3500 && sample[i + 1] > sample[i])
+        if ((float)trigger + 50 > (float)sample[i] / 4095 * 3500 && (float)trigger - 5 < (float)sample[i] / 4095 * 3500 && sample[i + 1] > sample[i])
             flag = true;
 
         if (flag == true){
@@ -93,6 +93,13 @@ void MainWindow::handleResults(const std::vector<int>& sample, const std::string
                 x_value += step;
             }
         }
+    }
+
+    if (flag == false){
+        ui->warning->setText("Триггер не распознан. Увеличьте частоту дискретизации.");
+    }
+    else {
+        ui->warning->setText("");
     }
 
     QPen pen(Qt::blue);
