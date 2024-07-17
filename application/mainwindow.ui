@@ -22,6 +22,9 @@
     <height>544</height>
    </size>
   </property>
+  <property name="contextMenuPolicy">
+   <enum>Qt::PreventContextMenu</enum>
+  </property>
   <property name="windowTitle">
    <string>ADC</string>
   </property>

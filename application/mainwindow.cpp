@@ -101,7 +101,7 @@ void MainWindow::handleResults(const std::vector<int>& sample, const std::string
     }
 
     if (flag == false && first_warning_flag == false){
-        ui->warning->setText("Триггер не распознан. Увеличьте частоту дискретизации.");
+        ui->warning->setText("Триггер не распознан. Измените уровень триггера.");
     }
     else if (flag == true && first_warning_flag == false) {
         ui->warning->setText("");
