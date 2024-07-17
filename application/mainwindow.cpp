@@ -64,21 +64,26 @@ void MainWindow::handleResults(const std::vector<int>& sample, const std::string
     int trigger = ui->triggerSlider->value();
     bool flag = false;
     bool flag_first_dot = true;
+    bool first_warning_flag = false;
     float step = 1 / std::stof(freq);
     float x_value = 0;
     warning_flag = warn_flag;
 
     if (warning_flag == 1) {
         ui->warning->setText("Частота дискретизации слишком низкая!");
+        first_warning_flag = true;
     }
     else if (warning_flag == 2){
         ui->warning->setText("Частота дискретизации слишком высокая!");
+        first_warning_flag = true;
     }
 
     for (int i = 0; i < sample.size() - 1;  ++i) {
 
-        if ((float)trigger + 50 > (float)sample[i] / 4095 * 3500 && (float)trigger - 5 < (float)sample[i] / 4095 * 3500 && sample[i + 1] > sample[i])
+        if ((float)trigger + 50 > (float)sample[i] / 4095 * 3500 && (float)trigger - 50 < (float)sample[i] / 4095 * 3500 && sample[i + 1] > sample[i] && flag_first_dot == true){
             flag = true;
+            continue;
+        }
 
         if (flag == true){
             if (flag_first_dot == true){
@@ -95,10 +100,10 @@ void MainWindow::handleResults(const std::vector<int>& sample, const std::string
         }
     }
 
-    if (flag == false){
+    if (flag == false && first_warning_flag == false){
         ui->warning->setText("Триггер не распознан. Увеличьте частоту дискретизации.");
     }
-    else {
+    else if (flag == true && first_warning_flag == false) {
         ui->warning->setText("");
     }
 
