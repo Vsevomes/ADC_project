@@ -1,6 +1,6 @@
 #include "function.h"
 
-void find_freq(std::vector<int>& sample, int& adc_freq, std::string& freq){
+void find_freq(std::vector<int>& sample, int& adc_freq, std::string& freq, int& warning_flag){
     int mid_val = 0;
     int start_flag = 0;
     int per_flag = 0;
@@ -14,14 +14,14 @@ void find_freq(std::vector<int>& sample, int& adc_freq, std::string& freq){
         mid_val += sample[i];
     mid_val /= sample.size();
 
-    for (int i = 0; i < sample.size() - 1; ++i){
+    for (int i = 0; i < sample.size() - 2 ; ++i){
 
-        if (mid_val < sample[i] && mid_val < sample[i + 1]){
+        if (mid_val < sample[i] && mid_val < sample[i + 1] && mid_val < sample[i + 2]){
             half_per_flag = 1;
         }
 
         if (half_per_flag == 1){
-            if (mid_val > sample[i] && mid_val > sample[i + 1]) {
+            if (mid_val > sample[i] && mid_val > sample[i + 1] && mid_val > sample[i + 2]) {
                 per_flag = 1;
                 half_per_flag = 0;
             }
@@ -42,7 +42,18 @@ void find_freq(std::vector<int>& sample, int& adc_freq, std::string& freq){
         }
     }
 
-    fr /= count_period;
+    if (fr != 0){
+        fr /= count_period;
+    }
+    else{
+        if (l == 0 && r == 0){
+            warning_flag = 1;
+        }
+
+        if (l == 0 && r != 0){
+            warning_flag = 2;
+        }
+    }
 
     freq = std::to_string(round(fr * 100) / 100);
     freq = freq.substr(0, freq.length() - 4);
