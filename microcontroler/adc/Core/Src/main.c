@@ -64,7 +64,7 @@ static void MX_TIM3_Init(void);
 /* Private user code ---------------------------------------------------------*/
 /* USER CODE BEGIN 0 */
 uint8_t control_flag = 0;
-uint16_t sample[300];
+uint16_t sample[400];
 int size = sizeof(sample) / sizeof(uint16_t);
 int iter = 0;
 int disc_prescaler = 4000;
@@ -134,8 +134,10 @@ int main(void)
   /* USER CODE BEGIN WHILE */
   while (1)
   {
-	  //HAL_UART_Receive(&huart1, &received_sig, 1, HAL_MAX_DELAY);
-	  if (control_flag == 1 /*&& received_sig == 0xAA*/){
+	  HAL_UART_Receive(&huart1, &received_sig, 1, HAL_MAX_DELAY);
+
+	  if (control_flag == 1){
+		  if (received_sig == 0xAA){
 			  sprintf(msg, "%c\n", send_sig);
 			  HAL_UART_Transmit(&huart1, (uint8_t*) msg, strlen(msg), HAL_MAX_DELAY);
 			  sprintf(msg, "%lu\n", HAL_RCC_GetPCLK2Freq() / adc_prescaler / disc_prescaler);
@@ -148,6 +150,29 @@ int main(void)
 			  }
 			  sprintf(msg, "\n");
 			  HAL_UART_Transmit(&huart1, (uint8_t*) msg, strlen(msg), HAL_MAX_DELAY);
+		  }
+
+		  else if (received_sig == 0xCA){
+			  disc_prescaler = 8000;
+			  MX_TIM3_Init();
+		  }
+
+		  else if (received_sig == 0xCB){
+			  disc_prescaler = 4000;
+			  MX_TIM3_Init();
+		  }
+		  else if (received_sig == 0xCC){
+			  disc_prescaler = 2000;
+			  MX_TIM3_Init();
+		  }
+		  else if (received_sig == 0xCD){
+			  disc_prescaler = 1000;
+			  MX_TIM3_Init();
+		  }
+		  else if (received_sig == 0xCE){
+			  disc_prescaler = 500;
+			  MX_TIM3_Init();
+		  }
 
 		  control_flag = 0;
 	  }
@@ -237,7 +262,7 @@ static void MX_ADC1_Init(void)
   */
   sConfig.Channel = ADC_CHANNEL_3;
   sConfig.Rank = ADC_REGULAR_RANK_1;
-  sConfig.SamplingTime = ADC_SAMPLETIME_239CYCLES_5;
+  sConfig.SamplingTime = ADC_SAMPLETIME_71CYCLES_5;
   if (HAL_ADC_ConfigChannel(&hadc1, &sConfig) != HAL_OK)
   {
     Error_Handler();
@@ -313,7 +338,7 @@ static void MX_USART1_UART_Init(void)
 
   /* USER CODE END USART1_Init 1 */
   huart1.Instance = USART1;
-  huart1.Init.BaudRate = 9600;
+  huart1.Init.BaudRate = 230400;
   huart1.Init.WordLength = UART_WORDLENGTH_8B;
   huart1.Init.StopBits = UART_STOPBITS_1;
   huart1.Init.Parity = UART_PARITY_NONE;

@@ -6,6 +6,7 @@ MainWindow::MainWindow(QWidget *parent)
     , ui(new Ui::MainWindow)
     , chartThread(new ChartThread)
     , thread(new QThread)
+    , warning_flag(0)
 {
     ui->setupUi(this);
     ui->pushButton->setCheckable(true);
@@ -18,6 +19,8 @@ MainWindow::MainWindow(QWidget *parent)
 
     ui->triggerSlider->setRange(0, 3300);
 
+    ui->btn500Hz->click();
+
     qRegisterMetaType<std::vector<int>>("std::vector<int>");
     qRegisterMetaType<std::string>("std::string");
 
@@ -25,7 +28,6 @@ MainWindow::MainWindow(QWidget *parent)
     connect(thread, &QThread::started, chartThread, &ChartThread::doWork);
     connect(chartThread, &ChartThread::resultReady, this, &MainWindow::handleResults);
     connect(chartThread, &ChartThread::workFinished, this, &MainWindow::handleWorkFinished);
-
 }
 
 MainWindow::~MainWindow()
@@ -46,12 +48,15 @@ void MainWindow::on_pushButton_toggled(bool checked)
         }
     } else {
         ui->status->setText("Передача данных остановлена");
+        ui->warning->setText("");
         chartThread->stopWork();
     }
 }
 
-void MainWindow::handleResults(const std::vector<int>& sample, const std::string& freq, const std::string& amplitude, const std::string& low_volt, const std::string& deviation)
+void MainWindow::handleResults(const std::vector<int>& sample, const std::string& freq, const std::string& amplitude, const std::string& low_volt, const std::string& deviation, const int& warn_flag)
 {
+    std::cout << "Handling results: freq=" << freq << ", amplitude=" << amplitude << ", low_volt=" << low_volt << ", deviation=" << deviation << std::endl;
+
     QtCharts::QSplineSeries *series = new QtCharts::QSplineSeries();
     QtCharts::QSplineSeries *trigger_series = new QtCharts::QSplineSeries();
     QtCharts::QChart *chart = new QtCharts::QChart();
@@ -59,13 +64,26 @@ void MainWindow::handleResults(const std::vector<int>& sample, const std::string
     int trigger = ui->triggerSlider->value();
     bool flag = false;
     bool flag_first_dot = true;
+    bool first_warning_flag = false;
     float step = 1 / std::stof(freq);
     float x_value = 0;
+    warning_flag = warn_flag;
+
+    if (warning_flag == 1) {
+        ui->warning->setText("Частота дискретизации слишком низкая!");
+        first_warning_flag = true;
+    }
+    else if (warning_flag == 2){
+        ui->warning->setText("Частота дискретизации слишком высокая!");
+        first_warning_flag = true;
+    }
 
     for (int i = 0; i < sample.size() - 1;  ++i) {
 
-        if ((float)trigger - 100 < (float)sample[i] / 4095 * 3500 && (float)trigger + 100 > (float)sample[i] / 4095 * 3500 && sample[i + 1] > sample[i])
+        if ((float)trigger + 50 > (float)sample[i] / 4095 * 3500 && (float)trigger - 50 < (float)sample[i] / 4095 * 3500 && sample[i + 1] > sample[i] && flag_first_dot == true){
             flag = true;
+            continue;
+        }
 
         if (flag == true){
             if (flag_first_dot == true){
@@ -80,6 +98,13 @@ void MainWindow::handleResults(const std::vector<int>& sample, const std::string
                 x_value += step;
             }
         }
+    }
+
+    if (flag == false && first_warning_flag == false){
+        ui->warning->setText("Триггер не распознан. Измените уровень триггера.");
+    }
+    else if (flag == true && first_warning_flag == false) {
+        ui->warning->setText("");
     }
 
     QPen pen(Qt::blue);
@@ -139,5 +164,105 @@ void MainWindow::on_trigger_textChanged()
     else {
         ui->triggerSlider->setSliderPosition(value.toInt());
     }
+}
+
+void MainWindow::on_btn250Hz_clicked()
+{
+    ui->pushButton->setChecked(false);
+    ui->warning->setText("");
+    warning_flag = 0;
+    struct termios tty;
+    int serial_port = open("/dev/ttyUSB0", O_RDWR);
+    if (serial_port < 0) {
+        std::cerr << "Ошибка при открытии UART порта" << std::endl;
+        return;
+    }
+
+    init_port_uart(serial_port, tty);
+
+    send_signal(serial_port, DIVIDER_250Hz);
+    std::cout << "send sig 250 Hz" << std::endl;
+
+    ::close(serial_port);
+}
+
+void MainWindow::on_btn500Hz_clicked()
+{
+    ui->pushButton->setChecked(false);
+    ui->warning->setText("");
+    warning_flag = 0;
+    struct termios tty;
+    int serial_port = open("/dev/ttyUSB0", O_RDWR);
+    if (serial_port < 0) {
+        std::cerr << "Ошибка при открытии UART порта" << std::endl;
+        return;
+    }
+
+    init_port_uart(serial_port, tty);
+
+    send_signal(serial_port, DIVIDER_500Hz);
+    std::cout << "send sig 500 Hz" << std::endl;
+
+    ::close(serial_port);
+}
+
+void MainWindow::on_btn1000Hz_clicked()
+{
+    ui->pushButton->setChecked(false);
+    ui->warning->setText("");
+    warning_flag = 0;
+    struct termios tty;
+    int serial_port = open("/dev/ttyUSB0", O_RDWR);
+    if (serial_port < 0) {
+        std::cerr << "Ошибка при открытии UART порта" << std::endl;
+        return;
+    }
+
+    init_port_uart(serial_port, tty);
+
+    send_signal(serial_port, DIVIDER_1000Hz);
+    std::cout << "send sig 1000 Hz" << std::endl;
+
+    ::close(serial_port);
+}
+
+void MainWindow::on_btn2000Hz_clicked()
+{
+    ui->pushButton->setChecked(false);
+    ui->warning->setText("");
+    warning_flag = 0;
+    struct termios tty;
+    int serial_port = open("/dev/ttyUSB0", O_RDWR);
+    if (serial_port < 0) {
+        std::cerr << "Ошибка при открытии UART порта" << std::endl;
+        return;
+    }
+
+    init_port_uart(serial_port, tty);
+
+    send_signal(serial_port, DIVIDER_2000Hz);
+    std::cout << "send sig 2000 Hz" << std::endl;
+
+    ::close(serial_port);
+}
+
+void MainWindow::on_btn4000Hz_clicked()
+{
+    ui->pushButton->setChecked(false);
+    ui->warning->setText("");
+    warning_flag = 0;
+    struct termios tty;
+    int serial_port = open("/dev/ttyUSB0", O_RDWR);
+    if (serial_port < 0) {
+        std::cerr << "Ошибка при открытии UART порта" << std::endl;
+        return;
+    }
+
+    init_port_uart(serial_port, tty);
+
+    send_signal(serial_port, DIVIDER_4000Hz);
+    std::cout << "send sig 4000 Hz" << std::endl;
+
+    ::close(serial_port);
 }
 
