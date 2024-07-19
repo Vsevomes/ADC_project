@@ -140,10 +140,6 @@ TEST(FindDeviationTest, EmptySample){
 }
 
 int main(int argc, char **argv) {
-    std::vector<int> s = generate_sinusoidal_sample(10, 100, 500, 300);
-    for (auto num : s)
-        std::cout << num << " ";
-    std::cout << std::endl;
     ::testing::InitGoogleTest(&argc, argv);
     return RUN_ALL_TESTS();
 }
