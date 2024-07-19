@@ -4,6 +4,8 @@
 #include <cmath>
 #include <vector>
 #include <string>
+#include <unistd.h>
+#include <fcntl.h>
 
 void find_freq(std::vector<int>& sample, int& adc_freq, std::string& freq, int& warning_flag);
 void find_min_max_volt(std::vector<int>& sample, std::string& amplitude, std::string& low_volt);

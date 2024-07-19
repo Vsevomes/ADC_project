@@ -10,6 +10,11 @@ void find_freq(std::vector<int>& sample, int& adc_freq, std::string& freq, int& 
     int count_period = 0;
     double fr = 0;
 
+    if (sample.size() == 0){
+        std::cerr << "Выборка пуста" << std::endl;
+        return;
+    }
+
     for (int i = 0; i < sample.size(); ++i)
         mid_val += sample[i];
     mid_val /= sample.size();
@@ -84,6 +89,11 @@ void find_min_max_volt(std::vector<int>& sample, std::string& amplitude, std::st
 void find_deviation(std::vector<int>& sample, std::string& deviation){
     int mid_val = 0;
     float dev_sum = 0;
+
+    if (sample.size() == 0){
+        std::cerr << "Выборка пуста" << std::endl;
+        return;
+    }
 
     for (auto num : sample)
         mid_val += num;
